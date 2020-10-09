@@ -32,11 +32,10 @@ async function run() {
     
     const user = await octokit.request('GET /users/{username}', {
 	username: username
-    })
+    }).data
 
-    console.log(JSON.stringify(user, null, 4))
-
-    const payIds = user.bio.match(/(\S+\$\S+\.\S+)/g)
+    const bio = user.bio || ''
+    const payIds = bio.match(/(\S+\$\S+\.\S+)/g)
     console.log("found payids:", payIds)
 
     if (payIds && payIds.length > 0) {
