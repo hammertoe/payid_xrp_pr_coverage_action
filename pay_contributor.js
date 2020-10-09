@@ -56,12 +56,31 @@ async function run() {
 	const payments = comment.body.matchAll(/- (.+?) XRP ⇒ (.+?) \((.+?)\)/g)
 	console.log(payments)
 
+	let message = messageHeader
+	message += "The following payments were made:"
 	for (const payment of payments) {
-	    const amountXrp = payment[0]
+	    const amountXrp = parseFloat(payment[0])
+	    const amountDrops = amountXrp * 1000000
 	    const payId = payment[1]
 	    const xrpAddress = payment[2]
-	    console.log(amountXrp, payId, xrpAddress)
+	    console.log(`Paying ${payId} ({xrpAddress}) amount ${amountDrops}`)
+	    try {
+		const transactionHash = await xpringClient.send(amountDrops,
+								xrpAddress,
+								wallet)
+		console.log(transactionHash)
+		message += `- ${payid_amount_xrp} XRP ⇒ ${payId} (${resolvedXAddress})`
+		message += `  - txn id: [${transactionHash}](https://xrpscan.com/tx/${transactionHash})`
+	    } catch(e) {
+		message += `- *ERROR* ${payid_amount_xrp} XRP ⇒ ${payId} (${resolvedXAddress})`
+		console.log("Could not pay", payId, e)
+	    }
 	}
+	await octokit.issues.updateComment({
+	    ...repo,
+	    comment_id: comment.id,
+	    body: message
+	});
     }
     
     const { data } = await octokit.request('GET /users/{username}', {
