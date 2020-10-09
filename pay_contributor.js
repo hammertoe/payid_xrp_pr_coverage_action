@@ -87,10 +87,10 @@ async function run() {
 								xrpAddress,
 								wallet)
 		console.log(transactionHash)
-		message += `- ${amount_xrp} XRP ⇒ ${payId} (${resolvedXAddress})`
+		message += `- ${amountXrp} XRP ⇒ ${payId} (${xrpAddress})`
 		message += `  - txn id: [${transactionHash}](https://xrpscan.com/tx/${transactionHash})`
 	    } catch(e) {
-		message += `- *ERROR* ${amount_xrp} XRP ⇒ ${payId} (${resolvedXAddress})`
+		message += `- *ERROR* ${amountXrp} XRP ⇒ ${payId} (${xrpAddress})`
 		console.log("Could not pay", payId, e)
 	    }
 	}
