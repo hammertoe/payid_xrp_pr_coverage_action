@@ -29,10 +29,11 @@ async function run() {
     const pullRequestNumber = context.payload.pull_request.number
     const username = context.payload.pull_request.user.login
 
-    
     const user = await octokit.request('GET /users/{username}', {
 	username: username
     }).data
+
+    console.log(JSON.stringify(user, null, 4))
 
     const bio = user.bio || ''
     const payIds = bio.match(/(\S+\$\S+\.\S+)/g)
