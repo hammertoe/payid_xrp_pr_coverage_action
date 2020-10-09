@@ -26,9 +26,15 @@ inputs:
   repo_token:
     description: 'Repository token'
     required: true
-outputs:
-  message:
-    description: 'A message containing the payments made'
+  old_coverage_file:
+    description: 'Old code coverage file'
+    required: true
+    default: .old-code/coverage.xml
+  new_coverage_file:
+    description: 'New code coverage file'
+    required: true
+    default: .new-code/coverage.xml
+  
 runs:
   using: 'node12'
   main: 'dist/index.js'

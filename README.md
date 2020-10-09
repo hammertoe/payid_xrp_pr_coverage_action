@@ -1,12 +1,13 @@
-# payid_xrp_action
+# payid_xrp_pr_coverage_action
 
 ## What?
-A Github Action that pays a contributor in XRP for every commit.
-This means you can define an amount to be paid every time someone pushes
-commits to you repository.
+A Github Action that pays a contributor in XRP for pull requests that
+increase the test code coverage of a repo
+
+The idea is to incentivise testing and improve code quality
 
 The address to send the payment to is looked up via [PayIds](https://payid.org/) 
-in the commit messages.
+from the PR opener's bio on Github.
 
 ## How to set it up?
 

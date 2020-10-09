@@ -4,10 +4,8 @@ on:
   # Trigger the workflow on push or pull request,
   # but only for the master branch
   pull_request:
-#    types: [opened, closed]
     branches:
       - master
-
 
 jobs:
   pay:
@@ -15,10 +13,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code  
+    - name: Checkout prior code  
       uses: actions/checkout@v2
       with:
-        fetch-depth: 10
+#        ref: ${{ github.event.before }}
+        ref: ${{ github.event.pull_request.base.sha }}
+        path: .old-code
+
+    - name: Install old code dependencies
+      run: |
+        cd .old-code
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Run tests on old code
+      run: |
+        cd .old-code
+        pytest --cov-report=xml --cov=foo test.py
+
+    - name: Checkout current code  
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        path: .new-code
+
+    - name: Install new code dependencies
+      run: |
+        cd .new-code
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Run test on new code
+      run: |
+        cd .new-code
+        pytest --cov-report=xml --cov=foo test.py
 
     - name: Run PayID
       uses: hammertoe/payid_xrp_pr_coverage_action@test_branch
@@ -26,5 +56,7 @@ jobs:
         repo_token: ${{secrets.GITHUB_TOKEN}}
         wallet_secret: ${{ secrets.PAYID_WALLET_SECRET }}
         amount: 1000000
+	old_coverage_file: .old-code/coverage.xml
+	new_coverage_file: .new_code/coverage.xml
 
         
