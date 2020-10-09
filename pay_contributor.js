@@ -29,10 +29,11 @@ async function run() {
     const pullRequestNumber = context.payload.pull_request.number
     const username = context.payload.pull_request.user.login
 
-    const user = await octokit.request('GET /users/{username}', {
+    const { data } = await octokit.request('GET /users/{username}', {
 	username: username
     })
-
+    const user = data.user
+    
     console.log(user)
 
     const bio = user.bio || ''
