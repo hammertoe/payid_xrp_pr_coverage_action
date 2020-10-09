@@ -32,6 +32,11 @@ async function run() {
 
     const message = "## Payout info\ndummy info"
     
+    const { data: comments } = await octokit.issues.listComments({
+	...repo,
+	issue_number: pullRequestNumber,
+    });
+    
     const comment = comments.find((comment) => {
 	return (
 	    comment.user.login === "github-actions[bot]" &&
