@@ -77,11 +77,11 @@ async function run() {
 	let message = messageHeader
 	message += "The following payments were made:"
 	for (const payment of payments) {
-	    const amountXrp = parseFloat(payment[0])
+	    const amountXrp = parseFloat(payment[1])
 	    const amountDrops = amountXrp * 1000000
-	    const payId = payment[1]
-	    const xrpAddress = payment[2]
-	    console.log(`Paying ${payId} ({xrpAddress}) amount ${amountDrops}`)
+	    const payId = payment[2]
+	    const xrpAddress = payment[3]
+	    console.log(`Paying ${payId} (${xrpAddress}) amount ${amountDrops}`)
 	    try {
 		const transactionHash = await xpringClient.send(amountDrops,
 								xrpAddress,
