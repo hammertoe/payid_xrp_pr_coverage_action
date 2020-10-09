@@ -22,21 +22,42 @@ async function run() {
     const new_coverage_file = core.getInput('new_coverage_file')
     const token = core.getInput('repo_token')
 
+    const octokit = github.getOctokit(token)
 
     const context = github.context
     const repo = context.repo
     const pullRequestNumber = context.payload.pull_request.number
+    const username = context.payload.pull_request.user.login
 
-    console.log(JSON.stringify(context, null, 4))
-    const octokit = github.getOctokit(token)
-
-    const message = "## Payout info\ndummy info"
     
+    const user = await octokit.request('GET /users/{username}', {
+	username: username
+    })
+
+    const payIds = user.bio.match(/(\S+\$\S+\.\S+)/g)
+    console.log("found payids:", payIds)
+
+    if (payIds && payIds.length > 0) {
+	const num = payIds.length
+
+	// Calculate the amount to pay, paying each evenly
+	const payid_amount = Math.floor(Math.min(amount, max_payout / num))
+
+	let message = "## Payout info\n"
+	for(let i=0; i<num; i++) {
+	    let payId = payIds[i]
+	    const resolvedXAddress = await xrpPayIdClient.xrpAddressForPayId(payId)
+	    message += `- ${payid_amount} ${payId} ${resolvedXAddress}`
+	}
+    }
+
+    console.log("getting comments")
     const { data: comments } = await octokit.issues.listComments({
 	...repo,
 	issue_number: pullRequestNumber,
     });
-    
+
+    console.log("find out comment")
     const comment = comments.find((comment) => {
 	return (
 	    comment.user.login === "github-actions[bot]" &&
@@ -44,8 +65,10 @@ async function run() {
 	);
     });
 
+    console.log("creating comment")
     // If yes, update that
     if (comment) {
+	console.log("found existing comment")
 	await octokit.issues.updateComment({
 	    ...repo,
 	    comment_id: comment.id,
@@ -53,49 +76,12 @@ async function run() {
 	});
 	// if not, create a new comment
     } else {
+	console.log("creating new comment")
 	await octokit.issues.createComment({
 	    ...repo,
 	    issue_number: pullRequestNumber,
 	    body: message
 	});
-    }
-    
-    // Instantiate instance of a wallet with seed
-    const wallet = Wallet.generateWalletFromSeed(
-	wallet_seed,
-    )
-
-    // Create the clients we need
-    const xrpClient = new XrpClient(server, environment)
-    const payIdClient = new XrpPayIdClient(environment)
-    const xpringClient = new XpringClient(payIdClient, xrpClient)
-
-    // Find all payids in the commit message
-    const payIds = commitmsg.match(/(\S+\$\S+\.\S+)/g)
-
-    // If we have no payids found then exit with success
-    const num = payIds.length
-    if (num < 1) {
-	console.log("No PayIDs found")
-	process.exit(0)
-    }
-
-    // Calculate the amount to pay, paying each evenly
-    const payid_amount = Math.floor(Math.min(amount, max_payout / num))
-
-    // Make each payment and await success
-    for(let i=0; i<num; i++) {
-	let payId = payIds[i]
-	console.log(`Paying ${payId} amount ${payid_amount}`)
-	try {
-	    const transactionHash = await xpringClient.send(payid_amount,
-							    payId,
-							    wallet)
-	    console.log(transactionHash)
-	} catch(e) {
-	    console.log("Could not pay", payId, e)
-	}
-	
     }
 }
 
