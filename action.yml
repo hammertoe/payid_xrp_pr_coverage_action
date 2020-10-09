@@ -8,9 +8,6 @@ inputs:
   amount:
     description: 'Amount of XRP in drops to pay each PayId found'
     default: 1000000
-  commit_log:
-    description: 'The commit message(s) to scan for PayIds'
-    required: true
   wallet_secret:
     descrption: 'The secret key of the XRP wallet to pay from'
     required: true

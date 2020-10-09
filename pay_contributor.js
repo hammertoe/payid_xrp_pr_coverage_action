@@ -5,33 +5,56 @@ const { PayIdClient, Wallet,
 const core = require('@actions/core')
 const github = require('@actions/github');
 
-require('dotenv').config()
-
 async function run() {
 
+    if (github.context.eventName !== "pull_request") {
+	core.setFailed("Can only run on pull requests!");
+	return;
+    }
+    
     // Get our parameters from the environment
-    const env = process.env
-    const wallet_seed = process.env.INPUT_WALLET_SECRET
-    const environment = process.env.INPUT_ENVIRONMENT.toLowerCase()
-    const server = process.env.INPUT_SERVER
-    const commitmsg = process.env.INPUT_COMMIT_LOG
-    const amount = process.env.INPUT_AMOUNT
-    const max_payout = process.env.INPUT_MAX_PAYOUT
-
-    // If not commit message, then try to work out open opener of pull request
+    const wallet_seed = core.getInput('wallet_secret')
+    const environment = core.getInput('environment').toLowerCase()
+    const server = core.getInput('server')
+    const amount = core.getInput('amount')
+    const max_payout = core.getInput('max_payout')
+    const old_coverage_file = core.getInput('old_coverage_file')
+    const new_coverage_file = core.getInput('new_coverage_file')
     const token = core.getInput('repo_token')
-    const octokit = github.getOctokit(token)
+
 
     const context = github.context
+    const repo = context.repo
+    const pullRequestNumber = context.payload.pull_request.number
+
     console.log(JSON.stringify(context, null, 4))
+    const octokit = github.getOctokit(token)
 
+    const message = "## Payout info\ndummy info"
     
-    // Abort if we don't have a wallet secret
-    if (wallet_seed === undefined) {
-	console.log("Missing INPUT_WALLET_SECRET")
-	process.exit(1)
-    }
+    const comment = comments.find((comment) => {
+	return (
+	    comment.user.login === "github-actions[bot]" &&
+		comment.body.startsWith("## Payout info\n")
+	);
+    });
 
+    // If yes, update that
+    if (comment) {
+	await octokit.issues.updateComment({
+	    ...repo,
+	    comment_id: comment.id,
+	    body: message
+	});
+	// if not, create a new comment
+    } else {
+	await octokit.issues.createComment({
+	    ...repo,
+	    issue_number: pullRequestNumber,
+	    body: message
+	});
+    }
+    
     // Instantiate instance of a wallet with seed
     const wallet = Wallet.generateWalletFromSeed(
 	wallet_seed,
