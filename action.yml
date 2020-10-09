@@ -8,9 +8,6 @@ inputs:
   amount:
     description: 'Amount of XRP in drops to pay each PayId found'
     default: 1000000
-  commit_log:
-    description: 'The commit message(s) to scan for PayIds'
-    required: true
   wallet_secret:
     descrption: 'The secret key of the XRP wallet to pay from'
     required: true
@@ -29,9 +26,15 @@ inputs:
   repo_token:
     description: 'Repository token'
     required: true
-outputs:
-  message:
-    description: 'A message containing the payments made'
+  old_coverage_file:
+    description: 'Old code coverage file'
+    required: true
+    default: .old-code/coverage.xml
+  new_coverage_file:
+    description: 'New code coverage file'
+    required: true
+    default: .new-code/coverage.xml
+  
 runs:
   using: 'node12'
   main: 'dist/index.js'
