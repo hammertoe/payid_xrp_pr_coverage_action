@@ -27,6 +27,7 @@
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
     "dotenv": "^8.2.0",
+    "string.prototype.matchall": "^4.0.2",
     "xpring-js": "^5.1.2"
   },
   "devDependencies": {
