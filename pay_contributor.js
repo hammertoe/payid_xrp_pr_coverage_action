@@ -32,6 +32,8 @@ async function run() {
     const { data } = await octokit.request('GET /users/{username}', {
 	username: username
     })
+    
+    console.log(data)
     const user = data.user
     
     console.log(user)
