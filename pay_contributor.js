@@ -29,6 +29,35 @@ async function run() {
     const pullRequestNumber = context.payload.pull_request.number
     const username = context.payload.pull_request.user.login
 
+    const action = context.payload.action
+
+    // Get all the comments
+    const { data: comments } = await octokit.issues.listComments({
+	...repo,
+	issue_number: pullRequestNumber,
+    });
+
+    const messageHeader = "## Payout info\n"
+    // Find if we already have a comment
+    const comment = comments.find((comment) => {
+	return (
+	    comment.user.login === "github-actions[bot]" &&
+		comment.body.startsWith(messageHeader)
+	);
+    });
+
+//    if (action == 'closed' && comment) {
+    if (comment) {
+	// PR Closed and we have a payment comment
+	const payments = comment.matchAll(/- (.+?) XRP ⇒ (.+?) \((.+?)\)/g)
+	for (const payment of payments) {
+	    const amountXrp = payment[0]
+	    const payId = payment[1]
+	    const xrpAddress = payment[2]
+	    console.log(amountXrp, payId, xrpAddress)
+	}
+    }
+    
     const { data } = await octokit.request('GET /users/{username}', {
 	username: username
     })
@@ -49,39 +78,23 @@ async function run() {
     const payid_amount = Math.floor(Math.min(amount, max_payout / num))
     const payid_amount_xrp = Number(payid_amount / 1000000).toFixed(2)
     
-    let message = "## Payout info\n"
+    let message = messageHeader
+    message += "When this PR is closed, the following payments will be made:\n"
     for(let i=0; i<num; i++) {
 	let payId = payIds[i]
 	const resolvedXAddress = await xrpPayIdClient.xrpAddressForPayId(payId)
 	message += `- ${payid_amount_xrp} XRP ⇒ ${payId} (${resolvedXAddress})`
     }
 
-    console.log("getting comments")
-    const { data: comments } = await octokit.issues.listComments({
-	...repo,
-	issue_number: pullRequestNumber,
-    });
-
-    console.log("find out comment")
-    const comment = comments.find((comment) => {
-	return (
-	    comment.user.login === "github-actions[bot]" &&
-		comment.body.startsWith("## Payout info\n")
-	);
-    });
-
-    console.log("creating comment")
-    // If yes, update that
+    // We have an existing comment so update that
     if (comment) {
-	console.log("found existing comment")
 	await octokit.issues.updateComment({
 	    ...repo,
 	    comment_id: comment.id,
 	    body: message
 	});
-	// if not, create a new comment
+    // if not, create a new comment
     } else {
-	console.log("creating new comment")
 	await octokit.issues.createComment({
 	    ...repo,
 	    issue_number: pullRequestNumber,
