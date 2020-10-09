@@ -37,19 +37,22 @@ async function run() {
     const payIds = bio.match(/(\S+\$\S+\.\S+)/g)
     console.log("found payids:", payIds)
 
-    if (payIds && payIds.length > 0) {
-	const xrpPayIdClient = new XrpPayIdClient(environment)
-	const num = payIds.length
+    if (payIds == undefined || payIds.length == 0) {
+	console.log("No PayIDs found")
+	process.exit(0)
+    }
+    
+    const xrpPayIdClient = new XrpPayIdClient(environment)
+    const num = payIds.length
 
-	// Calculate the amount to pay, paying each evenly
-	const payid_amount = Math.floor(Math.min(amount, max_payout / num))
-
-	let message = "## Payout info\n"
-	for(let i=0; i<num; i++) {
-	    let payId = payIds[i]
-	    const resolvedXAddress = await xrpPayIdClient.xrpAddressForPayId(payId)
-	    message += `- ${payid_amount} ${payId} ${resolvedXAddress}`
-	}
+    // Calculate the amount to pay, paying each evenly
+    const payid_amount = Math.floor(Math.min(amount, max_payout / num))
+    
+    let message = "## Payout info\n"
+    for(let i=0; i<num; i++) {
+	let payId = payIds[i]
+	const resolvedXAddress = await xrpPayIdClient.xrpAddressForPayId(payId)
+	message += `- ${payid_amount} ${payId} ${resolvedXAddress}`
     }
 
     console.log("getting comments")
