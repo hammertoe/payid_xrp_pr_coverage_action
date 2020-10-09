@@ -33,15 +33,12 @@ async function run() {
 	username: username
     })
     
-    console.log(data)
-    
-    console.log(data.bio)
-
     const bio = data.bio || ''
     const payIds = bio.match(/(\S+\$\S+\.\S+)/g)
     console.log("found payids:", payIds)
 
     if (payIds && payIds.length > 0) {
+	const payIdClient = new XrpPayIdClient(environment)
 	const num = payIds.length
 
 	// Calculate the amount to pay, paying each evenly
