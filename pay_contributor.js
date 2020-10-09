@@ -35,6 +35,8 @@ async function run() {
     const new_coverage_file = core.getInput('new_coverage_file')
     const token = core.getInput('repo_token')
 
+    const xrpPayIdClient = new XrpPayIdClient(environment)
+
     if (!old_coverage_file || !new_coverage_file) {
 	console.log("Missing coverage files")
 	process.exit(0)
@@ -76,6 +78,8 @@ async function run() {
 
 	let message = messageHeader
 	message += "The following payments were made:"
+	const xrpClient = new XrpClient(server, environment)
+	const xpringClient = new XpringClient(xrpPayIdClient, xrpClient)
 	for (const payment of payments) {
 	    const amountXrp = parseFloat(payment[1])
 	    const amountDrops = amountXrp * 1000000
@@ -114,7 +118,6 @@ async function run() {
 	process.exit(0)
     }
     
-    const xrpPayIdClient = new XrpPayIdClient(environment)
     const num = payIds.length
 
     let message = messageHeader
