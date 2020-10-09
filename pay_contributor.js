@@ -38,7 +38,7 @@ async function run() {
     console.log("found payids:", payIds)
 
     if (payIds && payIds.length > 0) {
-	const payIdClient = new XrpPayIdClient(environment)
+	const xrpPayIdClient = new XrpPayIdClient(environment)
 	const num = payIds.length
 
 	// Calculate the amount to pay, paying each evenly
