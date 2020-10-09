@@ -31,7 +31,7 @@ async function run() {
 
     const user = await octokit.request('GET /users/{username}', {
 	username: username
-    }).data
+    })
 
     console.log(JSON.stringify(user, null, 4))
 
