@@ -78,6 +78,10 @@ async function run() {
 
 	let message = messageHeader
 	message += "The following payments were made:"
+	// Instantiate instance of a wallet with seed
+	const wallet = Wallet.generateWalletFromSeed(
+	    wallet_seed,
+	)
 	const xrpClient = new XrpClient(server, environment)
 	const xpringClient = new XpringClient(xrpPayIdClient, xrpClient)
 	for (const payment of payments) {
