@@ -55,6 +55,7 @@ async function run() {
 	console.log("matching")
 	const payments = comment.body.matchAll(/- (.+?) XRP ⇒ (.+?) \((.+?)\)/g)
 	console.log(payments)
+
 	for (const payment of payments) {
 	    const amountXrp = payment[0]
 	    const payId = payment[1]
