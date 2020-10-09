@@ -29,7 +29,7 @@ async function run() {
     const pullRequestNumber = context.payload.pull_request.number
     const username = context.payload.pull_request.user.login
 
-    const user = await octokit.request('GET /users/{username}', {
+    const {data: {user}} = await octokit.request('GET /users/{username}', {
 	username: username
     })
 
