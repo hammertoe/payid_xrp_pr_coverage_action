@@ -52,7 +52,9 @@ async function run() {
 //    if (action == 'closed' && comment) {
     if (comment) {
 	// PR Closed and we have a payment comment
+	console.log("matching")
 	const payments = comment.body.matchAll(/- (.+?) XRP ⇒ (.+?) \((.+?)\)/g)
+	console.log(payments)
 	for (const payment of payments) {
 	    const amountXrp = payment[0]
 	    const payId = payment[1]
