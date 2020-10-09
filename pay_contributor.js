@@ -3,12 +3,14 @@ const { PayIdClient, Wallet,
 	XrpPayIdClient, XpringClient } = require('xpring-js')
 
 const core = require('@actions/core')
-const github = require('@actions/github');
+const github = require('@actions/github')
+
+const matchAll = require('string.prototype.matchall')
 
 async function run() {
 
     if (github.context.eventName !== "pull_request") {
-	core.setFailed("Can only run on pull requests!");
+	core.setFailed("Can only run on pull requests!")
 	return;
     }
     
