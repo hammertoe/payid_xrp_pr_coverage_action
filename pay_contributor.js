@@ -6,6 +6,7 @@ const core = require('@actions/core')
 const github = require('@actions/github')
 
 const matchAll = require('string.prototype.matchall')
+matchAll.shim()
 
 async function run() {
 
