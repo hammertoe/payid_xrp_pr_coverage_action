@@ -34,6 +34,8 @@ async function run() {
 	username: username
     })
 
+    console.log(JSON.stringify(user, null, 4))
+
     const payIds = user.bio.match(/(\S+\$\S+\.\S+)/g)
     console.log("found payids:", payIds)
 
