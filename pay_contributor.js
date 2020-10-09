@@ -34,11 +34,10 @@ async function run() {
     })
     
     console.log(data)
-    const user = data.user
     
-    console.log(user)
+    console.log(data.bio)
 
-    const bio = user.bio || ''
+    const bio = data.bio || ''
     const payIds = bio.match(/(\S+\$\S+\.\S+)/g)
     console.log("found payids:", payIds)
 
