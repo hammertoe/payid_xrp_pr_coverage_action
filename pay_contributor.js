@@ -47,12 +47,13 @@ async function run() {
 
     // Calculate the amount to pay, paying each evenly
     const payid_amount = Math.floor(Math.min(amount, max_payout / num))
+    const payid_amount_xrp = Number(payid_amount / 1000000).toFixed(2)
     
     let message = "## Payout info\n"
     for(let i=0; i<num; i++) {
 	let payId = payIds[i]
 	const resolvedXAddress = await xrpPayIdClient.xrpAddressForPayId(payId)
-	message += `- ${payid_amount} ${payId} ${resolvedXAddress}`
+	message += `- ${payid_amount_xrp} XRP ⇒ ${payId} (${resolvedXAddress})`
     }
 
     console.log("getting comments")
