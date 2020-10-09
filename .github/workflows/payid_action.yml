@@ -21,7 +21,7 @@ jobs:
         fetch-depth: 10
 
     - name: Run PayID
-      uses: hammertoe/payid_action@lookup-user
+      uses: hammertoe/payid_xrp_pr_coverage_action@test_branch
       with:
         repo_token: ${{secrets.GITHUB_TOKEN}}
         wallet_secret: ${{ secrets.PAYID_WALLET_SECRET }}
