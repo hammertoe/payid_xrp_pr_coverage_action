@@ -119,10 +119,10 @@ async function run() {
 
     let message = messageHeader
     if (new_cov_rate > old_cov_rate) {
-	let amount = (new_cov_rate - old_cov_rate) * 1000000
+	let amount = new_cov_rate - old_cov_rate
     
 	// Calculate the amount to pay, paying each evenly
-	const payid_amount = Math.floor(Math.min(amount, max_payout / num))
+	const payid_amount = Math.floor(Math.min(amount * 1000000, max_payout / num))
 	const payid_amount_xrp = Number(payid_amount / 1000000).toFixed(2)
     
 	message += `Coverage increased by: ${amount}%\n`
