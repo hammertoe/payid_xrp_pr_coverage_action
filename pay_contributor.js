@@ -87,10 +87,10 @@ async function run() {
 								xrpAddress,
 								wallet)
 		console.log(transactionHash)
-		message += `- ${payid_amount_xrp} XRP ⇒ ${payId} (${resolvedXAddress})`
+		message += `- ${amount_xrp} XRP ⇒ ${payId} (${resolvedXAddress})`
 		message += `  - txn id: [${transactionHash}](https://xrpscan.com/tx/${transactionHash})`
 	    } catch(e) {
-		message += `- *ERROR* ${payid_amount_xrp} XRP ⇒ ${payId} (${resolvedXAddress})`
+		message += `- *ERROR* ${amount_xrp} XRP ⇒ ${payId} (${resolvedXAddress})`
 		console.log("Could not pay", payId, e)
 	    }
 	}
@@ -119,7 +119,7 @@ async function run() {
 
     let message = messageHeader
     if (new_cov_rate > old_cov_rate) {
-	let amount = new_cov_rate - old_cov_rate
+	let amount = (new_cov_rate - old_cov_rate) * 1000000
     
 	// Calculate the amount to pay, paying each evenly
 	const payid_amount = Math.floor(Math.min(amount, max_payout / num))
