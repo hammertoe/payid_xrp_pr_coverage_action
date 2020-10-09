@@ -33,7 +33,7 @@ async function run() {
 	username: username
     })
 
-    console.log(JSON.stringify(user, null, 4))
+    console.log(user)
 
     const bio = user.bio || ''
     const payIds = bio.match(/(\S+\$\S+\.\S+)/g)
