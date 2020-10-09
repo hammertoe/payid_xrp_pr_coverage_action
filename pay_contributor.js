@@ -16,7 +16,7 @@ function getCoverageFromFile(filename) {
 						 {compact: true, spaces: 2}))
     const cov = jsonFile.coverage._attributes['line-rate']
 
-    return round(parseFloat(cov)*100)
+    return Math.round(parseFloat(cov)*100)
 }
 
 async function run() {
