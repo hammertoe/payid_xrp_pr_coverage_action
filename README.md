@@ -14,61 +14,113 @@ from the PR opener's bio on Github.
 An example workflow:
 
 ```yaml
-name: Pay contributors
+name: PayID PR Coverage Action
 
 on:
   # Trigger the workflow on push or pull request,
   # but only for the master branch
-  push:
+  pull_request:
     branches:
       - master
 
 jobs:
   pay:
+
     runs-on: ubuntu-latest
+
     steps:
-
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: get commit message
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+        
+    - name: Install testing
       run: |
-        echo ::set-env name=commit_log::$(git log --format=%B ${{ github.event.before }}..${{ github.event.after }})
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+
+    - name: Checkout prior code  
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.base.sha }}
+        path: .old-code
+
+    - name: Install old code dependencies
+      run: |
+        cd .old-code
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        cd ..
+
+    - name: Run tests on old code
+      run: |
+        cd .old-code
+        pytest --cov-report=xml --cov=foo test.py
+        cd ..
+
+    - name: Checkout current code  
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        path: .new-code
+
+    - name: Install new code dependencies
+      run: |
+        cd .new-code
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        cd ..
+
+    - name: Run test on new code
+      run: |
+        cd .new-code
+        pytest --cov-report=xml --cov=foo test.py
+        cd ..
 
     - name: Run PayID
-      uses: hammertoe/payid_xrp_action@master
+      uses: hammertoe/payid_xrp_pr_coverage_action@master
       with:
-        commit_log: ${{ env.commit_log }}
+        repo_token: ${{secrets.GITHUB_TOKEN}}
         wallet_secret: ${{ secrets.PAYID_WALLET_SECRET }}
-        amount: 1000000
+        old_coverage_file: /home/runner/work/test_repo/test_repo/.old-code/coverage.xml
+        new_coverage_file: /home/runner/work/test_repo/test_repo/.new-code/coverage.xml
+
 ```
 
-The above workflow will pay each PayId it finds in the commit logs 1 XRP (1000000 drops) from the XRP
-wallet with the secret key in the Github secret defined in `PAYID_WALLET_SECRET`.
+The above workflow will run a pytest code coverage over both the new and old code
+when a new PR is opened or synchornised. It will then add a comment to the PR
+stating who will be paid (having looked up the PayID in the committer's bio on Github)
 
 ## Parameters
 
 The action takes the following input parameters:
 
 ```yaml
-  amount:
-    description: 'Amount of XRP in drops to pay each PayId found'
-    default: 1000000
-  commit_log:
-    description: 'The commit message(s) to scan for PayIds'
-    required: true
+inputs:
   wallet_secret:
     descrption: 'The secret key of the XRP wallet to pay from'
     required: true
-  max_payout:
+  max_payout: 
     description: 'Maximum number of drops to pay out'
-    default: 10000000
+    default: 100000000
   environment:
     description: 'Environment to use, TESTNET or LIVENET'
     default: 'TESTNET'
   server:
     description: 'XRP Ledger server to use'
     default: 'test.xrp.xpring.io:50051'
+  dry_run:
+    description: 'Dry run. Do not actually make payment, but report what would be done'
+    default: true
+  repo_token:
+    description: 'Repository token'
+    required: true
+  old_coverage_file:
+    description: 'Old code coverage file'
+    required: true
+    default: .old-code/coverage.xml
+  new_coverage_file:
+    description: 'New code coverage file'
+    required: true
+    default: .new-code/coverage.xml
 ```
 
 Note above: by default this runs on the XRP TESTNET, you need to set the `environment` input parameter
