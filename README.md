@@ -9,6 +9,24 @@ The idea is to incentivise testing and improve code quality
 The address to send the payment to is looked up via [PayIds](https://payid.org/) 
 from the PR opener's bio on Github.
 
+When a PR is opened then the action checks the openers profile bio and looks for a PayID:
+
+![Image of PayID in Github Bio](_images/payid_in_bio.png)
+
+The action then puts a comment in the PR having resolved the PayID to an XRP address
+and calculated how much XRP to pay them based on increase in code test coverage:
+
+![Image of comment in PR indicating payment upcoming](_images/payout_pending.png)
+
+The owner of the repo can edit the comment if they like to adjust the amount or
+remove/add additional payees.
+
+Once the PR is closed then the action makes the actual payments and comments
+on the PR with the XRP Ledger txn id:
+
+![Image of comment in PR showing completed payment](_images/payout_complete.png)
+
+
 ## How to set it up?
 
 An example workflow:
