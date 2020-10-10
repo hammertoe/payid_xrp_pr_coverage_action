@@ -26,6 +26,9 @@ on the PR with the XRP Ledger txn id:
 
 ![Image of comment in PR showing completed payment](_images/payout_complete.png)
 
+Within seconds the payment arrives and the destination wallet:
+
+![Screenshot of Xumm wallet showing payment received](_images/payment_in_wallet.png)
 
 ## How to set it up?
 
