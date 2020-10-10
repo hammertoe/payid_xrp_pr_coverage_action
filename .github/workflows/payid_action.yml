@@ -4,7 +4,7 @@ on:
   # Trigger the workflow on push or pull request,
   # but only for the master branch
   pull_request:
-    tyes: [opened, synchronize, reopened, closed]
+    types: [opened, synchronize, reopened, closed]
     branches:
       - master
 
