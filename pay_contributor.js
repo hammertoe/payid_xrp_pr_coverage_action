@@ -91,9 +91,9 @@ async function run() {
 	    const xrpAddress = payment[3]
 	    console.log(`Paying ${payId} (${xrpAddress}) amount ${amountDrops}`)
 	    try {
-		const transactionHash = await xpringClient.send(amountDrops,
-								xrpAddress,
-								wallet)
+		const transactionHash = await xrpClient.send(amountDrops,
+							     xrpAddress,
+							     wallet)
 		console.log(transactionHash)
 		message += `- ${amountXrp} XRP ⇒ ${payId} (${xrpAddress})`
 		message += `  - txn id: [${transactionHash}](https://xrpscan.com/tx/${transactionHash})`
