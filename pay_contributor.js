@@ -107,6 +107,8 @@ async function run() {
 	    comment_id: comment.id,
 	    body: message
 	});
+	// We are done. Exit.
+	process.exit(0)
     }
     
     const { data } = await octokit.request('GET /users/{username}', {
